@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
+ */
 #include <catch2/catch.hpp>
 
 #include <depfile-parser.hpp>
@@ -33,18 +36,20 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
         auto const &result = ParseNMakeStyle (input);
 
         REQUIRE (result);
-        REQUIRE (result->target () == "abc");
-        REQUIRE (result->size () == 1);
-        REQUIRE ((*result) [0] == "def");
+        auto const &    prereq = result.prerequisites ();
+        REQUIRE (result.target () == "abc");
+        REQUIRE (prereq.size () == 1);
+        REQUIRE (prereq [0] == "def");
     }
     SECTION ("simple with continuation") {
         const std::string input { "abc :\\\r\n def"};
         auto const &result = ParseNMakeStyle (input);
 
         REQUIRE (result);
-        REQUIRE (result->target () == "abc");
-        REQUIRE (result->size () == 1);
-        REQUIRE ((*result) [0] == "def");
+        auto const &    prereq = result.prerequisites ();
+        REQUIRE (result.target () == "abc");
+        REQUIRE (prereq.size () == 1);
+        REQUIRE (prereq [0] == "def");
     }
 
     SECTION ("simple with continuation 2") {
@@ -52,19 +57,21 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
         auto const &result = ParseNMakeStyle (input);
 
         REQUIRE (result);
-        REQUIRE (result->target () == "abc");
-        REQUIRE (result->size () == 1);
-        REQUIRE ((*result) [0] == "def");
+        auto const &    prereq = result.prerequisites ();
+        REQUIRE (result.target () == "abc");
+        REQUIRE (prereq.size () == 1);
+        REQUIRE (prereq [0] == "def");
     }
     SECTION ("simple with continuation and stray '\\'") {
         const std::string input { "abc :\\\r\n def \\\r"};
         auto const &result = ParseNMakeStyle (input);
 
         REQUIRE (result);
-        REQUIRE (result->target () == "abc");
-        REQUIRE (result->size () == 2);
-        REQUIRE ((*result) [0] == "def");
-        REQUIRE ((*result) [1] == "\\");
+        auto const &    prereq = result.prerequisites ();
+        REQUIRE (result.target () == "abc");
+        REQUIRE (prereq.size () == 2);
+        REQUIRE (prereq [0] == "def");
+        REQUIRE (prereq [1] == "\\");
     }
     SECTION ("large input") {
         const std::string input { R"###(
@@ -165,87 +172,9 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
   "C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt\share.h" \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\xstring_insert.h \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\vector \
-  C:/dev/GT/pdistd/include\pdistd/pmf/byteblock.h \
-  C:/dev/GT/pdistd/include\pdistd/pseudoreflection.h \
-  C:/dev/GT/pdistd/include\pdistd/any.h \
-  C:/dev/GT/pdistd/include\pdistd/compiler.h \
-  C:/dev/GT/pdistd/include\pdistd/typeinfo.h \
-  C:/dev/GT/pdistd/include\pdistd/is_base_and_derived.h \
-  C:/dev/GT/pdistd/include\pdistd/type_traits_util.h \
-  C:/dev/GT/pdistd/include\pdistd/meta/bool.h \
-  C:/dev/GT/pdistd/include\pdistd/is_class.h \
-  C:/dev/GT/pdistd/include\pdistd/type_traits.h \
-  C:/dev/GT/pdistd/include\pdistd/types.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/types.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/../stddef.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/cat.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/../cdefs.h \
-  C:/dev/GT/pdistd/include\pdistd/stdint.h \
-  C:/dev/GT/pdistd/include\pdistd/meta/or.h \
-  C:/dev/GT/pdistd/include\pdistd/meta/if.h \
-  C:/dev/GT/pdistd/include\pdistd/meta/and.h \
-  C:/dev/GT/pdistd/include\pdistd/is_pod.h \
-  C:/dev/GT/pdistd/include\pdistd/is_empty.h \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\algorithm \
-  C:/dev/GT/pdistd/include\pdistd/assert.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/assert.h \
   "C:\Program Files (x86)\Windows Kits\10\include\10.0.17763.0\ucrt\assert.h" \
-  C:/dev/GT/pdistd/include\pdistd/win32/../psx/assert.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/../psx/../cdefs.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/../psx/../pdistd_exports.h \
-  C:/dev/GT/pdistd/include\pdistd/extern.h \
-  C:/dev/GT/pdistd/include\pdistd/enable_if.h \
-  C:/dev/GT/pdistd/include\pdistd/forward_list.h \
-  C:/dev/GT/pdistd/include\pdistd/namespace.h \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\iterator \
-  C:/dev/GT/pdistd/include\pdistd/meta/type.h \
-  C:/dev/GT/pdistd/include\pdistd/forward_list_node_traits.h \
-  C:/dev/GT/pdistd/include\pdistd/message.h \
-  C:/dev/GT/pdistd/include\pdistd/stdarg.h \
-  C:/tools/SCE/ORBIS-SDK/6.000/host_tools/lib/clang\include\stdarg.h \
-  C:/dev/GT/pdistd/include\pdistd/message/private.h \
-  C:/dev/GT/pdistd/include\pdistd/message/../compiler.h \
-  C:/dev/GT/pdistd/include\pdistd/message/../sleep.h \
-  C:/dev/GT/pdistd/include\pdistd/pdistd_exports.h \
-  C:/dev/GT/pdistd/include\pdistd/message/inline.h \
-  C:/dev/GT/pdistd/include\pdistd/forward_list_node.h \
-  C:/dev/GT/pdistd/include\pdistd/in_place_factory.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/iteration.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/iteration_iterate.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/dec.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/inc.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/tuple_elem.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/array_elem.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/array_data.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/array_size.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/detail/slot_def.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/iteration_self.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/repeat.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/enum.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/comma_if.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/comma.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/empty.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/if.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/bool.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/enum_params.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/enum_binary_params.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/expand.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/enum_trailing_params.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/enum_trailing_binary_params.h \
-  C:/dev/GT/pdistd/include\pdistd/preprocessor/detail/iter_forward1.h \
-  C:/dev/GT/pdistd/include\pdistd/instance_buffer.h \
-  C:/dev/GT/pdistd/include\pdistd/aligned.h \
-  C:/dev/GT/pdistd/include\pdistd/alignof.h \
-  C:/dev/GT/pdistd/include\pdistd/cdefs.h \
-  C:/dev/GT/pdistd/include\pdistd/alignedi.h \
-  C:/dev/GT/pdistd/include\pdistd/static_assert.h \
-  C:/dev/GT/pdistd/include\pdistd/number.h \
-  C:/dev/GT/pdistd/include\pdistd/stl_container.h \
-  C:/dev/GT/pdistd/include\pdistd/stl_allocator.h \
-  C:/dev/GT/pdistd/include\pdistd/stddef.h \
-  C:/dev/GT/pdistd/include\pdistd/stdlib.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/stdlib.h \
-  C:/dev/GT/pdistd/include\pdistd/win32/../compiler.h \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\deque \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\list \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\set \
@@ -257,9 +186,10 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
 )###"};
         auto const &result = ParseNMakeStyle (input);
         REQUIRE (result);
-        REQUIRE (result->target () == "z/sample.h");
-        REQUIRE (result->size () == 186);
-        REQUIRE ((*result) [13] == "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.17763.0\\ucrt\\corecrt.h");
-        REQUIRE ((*result) [185] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\iostream");
+        auto const &    prereq = result.prerequisites ();
+        REQUIRE (result.target () == "z/sample.h");
+        REQUIRE (prereq.size () == 108);
+        REQUIRE (prereq [13] == "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.17763.0\\ucrt\\corecrt.h");
+        REQUIRE (prereq [100] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\deque");
     }
 }

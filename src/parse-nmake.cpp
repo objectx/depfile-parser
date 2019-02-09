@@ -63,7 +63,7 @@ namespace {
 }
 
 namespace DependencyFileParser {
-    std::optional<Result> ParseNMakeStyle (const char *p, size_t size) {
+    Result ParseNMakeStyle (const char *p, size_t size) {
         auto const end_p = p + size;
         p = skip_comment_and_space (p, end_p);
         if (p == nullptr) {
@@ -94,6 +94,6 @@ namespace DependencyFileParser {
                 break;
             }
         }
-        return std::make_optional<Result> (std::get<0> (target), std::move (deps));
+        return {std::get<0> (target), std::move (deps)};
     }
 }

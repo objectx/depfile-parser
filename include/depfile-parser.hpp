@@ -9,46 +9,41 @@
 #ifndef depfile_parser_hpp__56a43180cc954e9cba64a0fb63127d22
 #define depfile_parser_hpp__56a43180cc954e9cba64a0fb63127d22 1
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <optional>
 
 namespace DependencyFileParser {
 
     class Result final {
         std::string              target_;
-        std::vector<std::string> dependents_;
+        std::vector<std::string> prerequisites_;
 
     public:
-        Result () = default;
-        Result (const std::string& target, const std::vector<std::string>& deps)
-            : target_{target}
-            , dependents_{deps} {
-            /* NO-OP */
-        }
-        Result (std::string target, std::vector<std::string>&& deps)
+        ~Result ()             = default;
+        Result ()              = default;
+        Result (const Result&) = default;
+        Result (Result&&)      = default;
+        Result (std::string target, std::vector<std::string> prereq)
             : target_{std::move (target)}
-            , dependents_{std::move (deps)} {
+            , prerequisites_{std::move (prereq)} {
             /* NO-OP */
         }
 
-        const std::string& target () const { return target_; }
-        auto               begin () const { return dependents_.begin (); }
-        auto               end () const { return dependents_.end (); }
-        size_t             size () const { return dependents_.size (); }
-        const std::string& operator[] (size_t idx) const {
-            return dependents_[idx];
-        }
-    };
+        bool     is_valid () const noexcept { return !target_.empty (); }
+        explicit operator bool () const noexcept { return is_valid (); }
 
+        const std::string&              target () const { return target_; }
+        const std::vector<std::string>& prerequisites () const { return prerequisites_; }
+    };
 
     /// @brief Parse supplied bytes as a UN?X Make style dependency definition.
     /// @param src The source byte sequence
     /// @param src_size # of bytes in the sequence
     /// @return Parsed dependency
-    std::optional<Result> Parse (const char* src, size_t src_size);
+    Result Parse (const char* src, size_t src_size);
 
-    inline std::optional<Result>  ParseDependencyFile (const std::string& src) {
+    inline Result ParseDependencyFile (const std::string& src) {
         return Parse (src.c_str (), src.size ());
     }
 
@@ -56,11 +51,11 @@ namespace DependencyFileParser {
     /// @param src The source byte sequence
     /// @param src_size # of bytes in the sequence
     /// @return Parsed dependency
-    std::optional<Result> ParseNMakeStyle (const char* src, size_t src_size);
+    Result ParseNMakeStyle (const char* src, size_t src_size);
 
-    inline std::optional<Result>  ParseNMakeStyle (const std::string& src) {
+    inline Result ParseNMakeStyle (const std::string& src) {
         return ParseNMakeStyle (src.c_str (), src.size ());
     }
-}
+} // namespace DependencyFileParser
 
 #endif /* depfile_parser_hpp__56a43180cc954e9cba64a0fb63127d22 */
