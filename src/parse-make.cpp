@@ -1,52 +1,40 @@
 /*
  * Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
  */
-
-#include "depfile-parser.hpp"
 #include "utility.hpp"
-
-#include <cctype>
-#include <cassert>
-#include <tuple>
+#include <depfile-parser.hpp>
 
 using namespace DependencyFileParser::detail;
 
 namespace {
-
-    std::tuple<std::string, const char *> fetch_token (const char *p, const char *end_p) {
+    std::tuple<std::string, const char *>   fetch_token (const char *p, const char *end_p) {
         assert (p < end_p);
         assert (! isspace (*p));
-        auto q = p;
-        if (*q == '"') {
-            auto s = ++q;
-            while (q < end_p) {
-                if (*q == '"') {
-                    std::string token { s, static_cast<size_t> (q - s) };
-                    q = skip_comment_and_space (q + 1, end_p);
-                    return {token, q};
-                }
-                ++q;
-            }
-            assert (q == end_p);
-            return {std::string {s, static_cast<size_t> (q - s)}, end_p};
-        }
-        else {
-            while (q < end_p) {
-                if (isspace (*q)) {
-                    std::string token { p, static_cast<size_t> (q - p) };
-                    q = skip_comment_and_space (q, end_p);
-                    return {token, q};
-                }
-                ++q;
-            }
-            assert (q == end_p);
-            return {std::string {p, static_cast<size_t> (q - p)}, end_p};
-        }
-    }
-}
 
+        std::string tok;
+        while (p < end_p) {
+            if (isspace (*p)) {
+                return {std::move (tok), skip_comment_and_space (p, end_p)};
+            }
+            if (*p == '\\') {
+                ++p;
+                if (end_p <= p) {
+                    tok.push_back ('\\');
+                    return {std::move (tok), end_p};
+                }
+                tok.push_back (*p++);
+                continue;
+            }
+            tok.push_back (*p++);
+        }
+        assert (p == end_p);
+        return {std::move (tok), end_p};
+    }
+
+}
 namespace DependencyFileParser {
-    Result ParseNMakeStyle (const char* src, size_t size) {
+
+    Result Parse (const char* src, size_t size) {
         auto const end_p = src + size;
         src = skip_comment_and_space (src, end_p);
         if (src == end_p) {
@@ -90,4 +78,4 @@ namespace DependencyFileParser {
         }
         return {std::move (target_path), std::move (deps)};
     }
-} // namespace DependencyFileParser
+}

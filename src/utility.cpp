@@ -44,7 +44,7 @@ namespace DependencyFileParser {
                 }
                 ++p;
             }
-            return nullptr;
+            return end_p;
         }
 
         const char* skip_to_eol (const char* p, const char* end_p) {
@@ -54,8 +54,25 @@ namespace DependencyFileParser {
                 }
                 ++p;
             }
-            return nullptr;
+            return end_p;
         }
 
+        const char* skip_comment_and_space (const char* p, const char* end_p) {
+            while (p < end_p) {
+                auto q = skip_space (p, end_p);
+                if (q == end_p) {
+                    return end_p;
+                }
+                if (*q != '#') {
+                    return q;
+                }
+                // *q == '#'.  Skip to EOL.
+                p = skip_to_eol (q + 1, end_p);
+                if (p == end_p) {
+                    return end_p;
+                }
+            }
+            return end_p;
+        }
     } // namespace detail
 } // namespace DependencyFileParser

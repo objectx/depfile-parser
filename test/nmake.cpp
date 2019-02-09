@@ -71,7 +71,7 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
         REQUIRE (result.target () == "abc");
         REQUIRE (prereq.size () == 2);
         REQUIRE (prereq [0] == "def");
-        REQUIRE (prereq [1] == "\\");
+        REQUIRE (prereq [1] == "\\");   // Is really needed?
     }
     SECTION ("large input") {
         const std::string input { R"###(

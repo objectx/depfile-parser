@@ -28,7 +28,11 @@ include_directories (ext)
 
 set (CMAKE_FOLDER Parser)
 set (dep_parser_ depfile-parser)
-add_library (${dep_parser_} STATIC src/parse-nmake.cpp src/utility.cpp src/utility.hpp)
+add_library (${dep_parser_} STATIC include/depfile-parser.hpp
+                                   src/utility.cpp
+                                   src/utility.hpp
+                                   src/parse-make.cpp
+                                   src/parse-nmake.cpp)
 target_include_directories (${dep_parser_} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_features    (${dep_parser_} PUBLIC cxx_std_14)
 
