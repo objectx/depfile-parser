@@ -2,68 +2,69 @@
 
 #include <depfile-parser.hpp>
 
+using namespace DependencyFileParser;
 TEST_CASE ("nmake style dependency", "[nmake]") {
     SECTION ("empty input") {
         const std::string input;
-        auto const &result = ParseNMakeStyleDependencyFile (input);
-        REQUIRE_FALSE (result.is_valid ());
+        auto const &result = ParseNMakeStyle (input);
+        REQUIRE_FALSE (result);
     }
     SECTION ("empty but contains comments") {
         const std::string input { R"===(
 # Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
 
-#            
+#
 # mokekek
 )==="};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
-        REQUIRE_FALSE (result.is_valid ());
+        auto const &result = ParseNMakeStyle (input);
+        REQUIRE_FALSE (result);
     }
     SECTION ("malformed dependency") {
         const std::string input { R"===(
 # mokeke
 
         foo)==="};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
-        REQUIRE_FALSE (result.is_valid ());
+        auto const &result = ParseNMakeStyle (input);
+        REQUIRE_FALSE (result);
     }
 
     SECTION ("simple dependency") {
         const std::string input { "abc : def"};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
+        auto const &result = ParseNMakeStyle (input);
 
-        REQUIRE (result.is_valid ());
-        REQUIRE (result.target () == "abc");
-        REQUIRE (result.size () == 1);
-        REQUIRE (result [0] == "def");
+        REQUIRE (result);
+        REQUIRE (result->target () == "abc");
+        REQUIRE (result->size () == 1);
+        REQUIRE ((*result) [0] == "def");
     }
     SECTION ("simple with continuation") {
         const std::string input { "abc :\\\r\n def"};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
+        auto const &result = ParseNMakeStyle (input);
 
-        REQUIRE (result.is_valid ());
-        REQUIRE (result.target () == "abc");
-        REQUIRE (result.size () == 1);
-        REQUIRE (result [0] == "def");
+        REQUIRE (result);
+        REQUIRE (result->target () == "abc");
+        REQUIRE (result->size () == 1);
+        REQUIRE ((*result) [0] == "def");
     }
 
     SECTION ("simple with continuation 2") {
         const std::string input { "abc :\\\r\n def \\\r\n"};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
+        auto const &result = ParseNMakeStyle (input);
 
-        REQUIRE (result.is_valid ());
-        REQUIRE (result.target () == "abc");
-        REQUIRE (result.size () == 1);
-        REQUIRE (result [0] == "def");
+        REQUIRE (result);
+        REQUIRE (result->target () == "abc");
+        REQUIRE (result->size () == 1);
+        REQUIRE ((*result) [0] == "def");
     }
     SECTION ("simple with continuation and stray '\\'") {
         const std::string input { "abc :\\\r\n def \\\r"};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
+        auto const &result = ParseNMakeStyle (input);
 
-        REQUIRE (result.is_valid ());
-        REQUIRE (result.target () == "abc");
-        REQUIRE (result.size () == 2);
-        REQUIRE (result [0] == "def");
-        REQUIRE (result [1] == "\\");
+        REQUIRE (result);
+        REQUIRE (result->target () == "abc");
+        REQUIRE (result->size () == 2);
+        REQUIRE ((*result) [0] == "def");
+        REQUIRE ((*result) [1] == "\\");
     }
     SECTION ("large input") {
         const std::string input { R"###(
@@ -254,11 +255,11 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\fstream \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\iostream
 )###"};
-        auto const &result = ParseNMakeStyleDependencyFile (input);
-        REQUIRE (result.is_valid ());
-        REQUIRE (result.target () == "z/sample.h");
-        REQUIRE (result.size () == 186);
-        REQUIRE (result [13] == "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.17763.0\\ucrt\\corecrt.h");
-        REQUIRE (result [185] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\iostream");
+        auto const &result = ParseNMakeStyle (input);
+        REQUIRE (result);
+        REQUIRE (result->target () == "z/sample.h");
+        REQUIRE (result->size () == 186);
+        REQUIRE ((*result) [13] == "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.17763.0\\ucrt\\corecrt.h");
+        REQUIRE ((*result) [185] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\iostream");
     }
 }

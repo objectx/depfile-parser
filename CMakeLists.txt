@@ -22,14 +22,14 @@ enable_testing ()
 set (CMAKE_FOLDER _extras)
 
 set (RC_ENABLE_CATCH YES)
-add_subdirectory (ext/rapidcheck)
+# add_subdirectory (ext/rapidcheck)
 
 include_directories (ext)
 
 set (CMAKE_FOLDER Parser)
 set (dep_parser_ depfile-parser)
-add_library (${dep_parser_} STATIC src/parse-nmake.cpp)
+add_library (${dep_parser_} STATIC src/parse-nmake.cpp src/utility.cpp src/utility.hpp)
 target_include_directories (${dep_parser_} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_compile_features    (${dep_parser_} PRIVATE cxx_std_14)
+target_compile_features    (${dep_parser_} PUBLIC cxx_std_17)
 
 add_subdirectory (test)
