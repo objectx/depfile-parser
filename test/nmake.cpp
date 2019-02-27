@@ -189,6 +189,7 @@ TEST_CASE ("nmake style dependency", "[nmake]") {
         auto const &    prereq = result.prerequisites ();
         REQUIRE (result.target () == "z/sample.h");
         REQUIRE (prereq.size () == 108);
+        REQUIRE (prereq[0] == "c:\\dev\\ref_tbl_gen\\sample.h");
         REQUIRE (prereq [13] == "C:\\Program Files (x86)\\Windows Kits\\10\\include\\10.0.17763.0\\ucrt\\corecrt.h");
         REQUIRE (prereq [100] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\deque");
     }

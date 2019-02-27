@@ -227,6 +227,7 @@ z/sample.h: \
         auto const &    prereq = result.prerequisites ();
         REQUIRE (result.target () == "z/sample.h");
         REQUIRE (prereq.size () == 143);
+        REQUIRE (prereq [0] == "/Users/objectx/Workspace/GitLab/GT/application/tools/ref_parser/standalone/sample.h");
         REQUIRE (prereq [1] == "Dummy File.h");
         REQUIRE (prereq [142] == "/usr/local/Cellar/llvm/7.0.1/include/c++/v1/__split_buffer");
     }

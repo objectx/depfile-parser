@@ -71,9 +71,9 @@ namespace DependencyFileParser {
                         if (*src != ':') {
                             return {}; // Malformed.
                         }
+                        src = skip_space (src + 1, end_p);
                     }
                 }
-                src = skip_space (src + 1, end_p);
                 if (src == end_p) {
                     return {};
                 }
