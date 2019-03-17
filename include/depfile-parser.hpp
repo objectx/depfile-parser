@@ -15,6 +15,9 @@
 
 namespace DependencyFileParser {
 
+    /**
+     * @brief Represents the dependency result.
+     */
     class Result final {
         std::string              target_;
         std::vector<std::string> prerequisites_;
@@ -39,7 +42,7 @@ namespace DependencyFileParser {
 
     /// @brief Parse supplied bytes as a UN?X Make style dependency definition.
     /// @param src The source byte sequence
-    /// @param src_size # of bytes in the sequence
+    /// @param size # of bytes in the sequence
     /// @return Parsed dependency
     Result Parse (const char* src, size_t size);
 
@@ -49,7 +52,7 @@ namespace DependencyFileParser {
 
     /// @brief Parse supplied bytes as a NMake style dependency definition.
     /// @param src The source byte sequence
-    /// @param src_size # of bytes in the sequence
+    /// @param size # of bytes in the sequence
     /// @return Parsed dependency
     Result ParseNMakeStyle (const char* src, size_t size);
 

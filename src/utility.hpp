@@ -3,10 +3,9 @@
 //
 #pragma once
 #ifndef utility_hpp__779FE0AC_DF0D_4F24_9312_AB0C307D20B9
-#define utility_hpp__779FE0AC_DF0D_4F24_9312_AB0C307D20B9
+#define utility_hpp__779FE0AC_DF0D_4F24_9312_AB0C307D20B9   1
 
 #include <depfile-parser.hpp>
-#include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
