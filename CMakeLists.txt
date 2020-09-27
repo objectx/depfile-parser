@@ -1,5 +1,5 @@
 
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.16)
 
 project (depfile-parser LANGUAGES CXX)
 
@@ -14,8 +14,6 @@ setvar_default (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 setvar_default (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 list (INSERT CMAKE_MODULE_PATH 0 ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
-
-include (cotire OPTIONAL)
 
 enable_testing ()
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
+ * Copyright (c) 2019 Masashi Fujita. All rights reserved.
  */
 #include <catch2/catch.hpp>
 
@@ -14,7 +14,7 @@ TEST_CASE ("make style dependency", "[make]") {
     }
     SECTION ("empty but contains comments") {
         const std::string input { R"===(
-# Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
+# Copyright (c) 2020 Masashi Fujita All rights reserved.
 
 #
 # mokekek

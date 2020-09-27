@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019  Polyphony Digital Inc.  All rights reserved.
+ * Copyright (c) 2019 Masashi Fujita. All rights reserved.
  */
 #include "utility.hpp"
 #include <depfile-parser.hpp>
@@ -11,9 +11,9 @@
 using namespace DependencyFileParser::detail;
 
 namespace {
-    std::tuple<std::string, const char*> fetch_token (const char* p, const char* end_p) {
+    std::tuple<std::string, const char *> fetch_token (const char *p, const char *end_p) {
         assert (p < end_p);
-        assert (!isspace (*p));
+        assert (! isspace (*p));
 
         std::string tok;
         while (p < end_p) {
@@ -34,11 +34,9 @@ namespace {
         assert (p == end_p);
         return {std::move (tok), end_p};
     }
-} // namespace
+}  // namespace
 
 namespace DependencyFileParser {
 
-    Result Parse (const char* src, size_t size) {
-        return parse (fetch_token, src, src + size);
-    }
-} // namespace DependencyFileParser
+    Result Parse (const char *src, size_t size) { return parse (fetch_token, src, src + size); }
+}  // namespace DependencyFileParser
