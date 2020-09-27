@@ -6,7 +6,7 @@
 
 #include <cctype>
 
-namespace DependencyFileParser { namespace detail {
+namespace DependencyFileParser::detail {
 
     const char *skip_space (const char *p, const char *end_p) {
 
@@ -58,7 +58,7 @@ namespace DependencyFileParser { namespace detail {
 
     const char *skip_comment_and_space (const char *p, const char *end_p) {
         while (p < end_p) {
-            auto q = skip_space (p, end_p);
+            auto const *q = skip_space (p, end_p);
             if (q == end_p) {
                 return end_p;
             }
@@ -73,4 +73,4 @@ namespace DependencyFileParser { namespace detail {
         }
         return end_p;
     }
-}}  // namespace DependencyFileParser::detail
+}  // namespace DependencyFileParser::detail

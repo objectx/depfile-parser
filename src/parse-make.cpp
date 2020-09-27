@@ -37,6 +37,5 @@ namespace {
 }  // namespace
 
 namespace DependencyFileParser {
-
-    Result Parse (const char *src, size_t size) { return parse (fetch_token, src, src + size); }
+    Result Parse (std::string_view src) { return parse (fetch_token, src.begin (), src.end ()); }
 }  // namespace DependencyFileParser

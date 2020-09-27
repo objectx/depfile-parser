@@ -5,6 +5,7 @@
 
 #include <depfile-parser.hpp>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 

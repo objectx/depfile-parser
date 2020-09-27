@@ -41,15 +41,11 @@ namespace DependencyFileParser {
     /// @param src The source byte sequence
     /// @param size # of bytes in the sequence
     /// @return Parsed dependency
-    Result Parse (const char *src, size_t size);
-
-    inline Result Parse (const std::string &src) { return Parse (src.c_str (), src.size ()); }
+    Result Parse (std::string_view src);
 
     /// @brief Parse supplied bytes as a NMake style dependency definition.
     /// @param src The source byte sequence
     /// @param size # of bytes in the sequence
     /// @return Parsed dependency
-    Result ParseNMakeStyle (const char *src, size_t size);
-
-    inline Result ParseNMakeStyle (const std::string &src) { return ParseNMakeStyle (src.c_str (), src.size ()); }
+    Result ParseNMakeStyle (std::string_view src);
 }  // namespace DependencyFileParser

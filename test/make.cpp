@@ -10,72 +10,66 @@ using namespace DependencyFileParser;
 TEST_CASE ("make style dependency") {
     SUBCASE ("empty input") {
         const std::string input;
-        auto const &result = Parse (input);
+        auto const &      result = Parse (input);
         REQUIRE_FALSE (result);
     }
     SUBCASE ("empty but contains comments") {
-        const std::string input { R"===(
+        auto const &result = Parse (R"===(
 # Copyright (c) 2020 Masashi Fujita All rights reserved.
 
 #
 # mokekek
-)==="};
-        auto const &result = Parse (input);
+)===");
         REQUIRE_FALSE (result);
     }
     SUBCASE ("malformed dependency") {
-        const std::string input { R"===(
+        auto const &      result = Parse (R"===(
 # mokeke
 
-        foo)==="};
-        auto const &result = Parse (input);
+        foo)===");
         REQUIRE_FALSE (result);
     }
 
     SUBCASE ("simple dependency") {
-        const std::string input { "abc : def"};
-        auto const &result = Parse (input);
+        auto const &      result = Parse ("abc : def");
 
         REQUIRE (result);
-        auto const &    prereq = result.prerequisites ();
+        auto const &prereq = result.prerequisites ();
         REQUIRE (result.target () == "abc");
         REQUIRE (prereq.size () == 1);
-        REQUIRE (prereq [0] == "def");
+        REQUIRE (prereq[0] == "def");
     }
     SUBCASE ("simple with continuation") {
-        const std::string input { "abc :\\\r\n def"};
-        auto const &result = Parse (input);
+        auto const &      result = Parse ("abc :\\\r\n def");
 
         REQUIRE (result);
-        auto const &    prereq = result.prerequisites ();
+        auto const &prereq = result.prerequisites ();
         REQUIRE (result.target () == "abc");
         REQUIRE (prereq.size () == 1);
-        REQUIRE (prereq [0] == "def");
+        REQUIRE (prereq[0] == "def");
     }
 
     SUBCASE ("simple with continuation 2") {
-        const std::string input { "abc :\\\r\n def \\\r\n"};
-        auto const &result = Parse (input);
+        auto const &      result = Parse ("abc :\\\r\n def \\\r\n");
 
         REQUIRE (result);
-        auto const &    prereq = result.prerequisites ();
+        auto const &prereq = result.prerequisites ();
         REQUIRE (result.target () == "abc");
         REQUIRE (prereq.size () == 1);
-        REQUIRE (prereq [0] == "def");
+        REQUIRE (prereq[0] == "def");
     }
     SUBCASE ("simple with continuation and stray '\\'") {
-        const std::string input { "abc :\\\r\n def \\\r"};
-        auto const &result = Parse (input);
+        auto const &      result = Parse ("abc :\\\r\n def \\\r");
 
         REQUIRE (result);
-        auto const &    prereq = result.prerequisites ();
+        auto const &prereq = result.prerequisites ();
         REQUIRE (result.target () == "abc");
         REQUIRE (prereq.size () == 2);
-        REQUIRE (prereq [0] == "def");
-        REQUIRE (prereq [1] == "\r");   // Is it really needed?
+        REQUIRE (prereq[0] == "def");
+        REQUIRE (prereq[1] == "\r");  // Is it really needed?
     }
     SUBCASE ("large input") {
-        const std::string input { R"===(
+        auto const &      result = Parse (R"===(
 # Test dep.
 
 z/sample.h: \
@@ -222,14 +216,13 @@ z/sample.h: \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/include/i386/_limits.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/usr/include/sys/syslimits.h \
   /usr/local/Cellar/llvm/7.0.1/include/c++/v1/__split_buffer
-)==="};
-        auto const &result = Parse (input);
+)===");
         REQUIRE (result);
-        auto const &    prereq = result.prerequisites ();
+        auto const &prereq = result.prerequisites ();
         REQUIRE (result.target () == "z/sample.h");
         REQUIRE (prereq.size () == 143);
-        REQUIRE (prereq [0] == "/Users/objectx/Workspace/GitLab/GT/application/tools/ref_parser/standalone/sample.h");
-        REQUIRE (prereq [1] == "Dummy File.h");
-        REQUIRE (prereq [142] == "/usr/local/Cellar/llvm/7.0.1/include/c++/v1/__split_buffer");
+        REQUIRE (prereq[0] == "/Users/objectx/Workspace/GitLab/GT/application/tools/ref_parser/standalone/sample.h");
+        REQUIRE (prereq[1] == "Dummy File.h");
+        REQUIRE (prereq[142] == "/usr/local/Cellar/llvm/7.0.1/include/c++/v1/__split_buffer");
     }
 }

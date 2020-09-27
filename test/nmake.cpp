@@ -8,32 +8,28 @@
 using namespace DependencyFileParser;
 TEST_CASE ("nmake style dependency") {
     SUBCASE ("empty input") {
-        const std::string input;
-        auto const &result = ParseNMakeStyle (input);
+        auto const &result = ParseNMakeStyle ("");
         REQUIRE_FALSE (result);
     }
     SUBCASE ("empty but contains comments") {
-        const std::string input { R"===(
+        auto const &result = ParseNMakeStyle (R"===(
 # Copyright (c) 2019 Masashi Fujita. All rights reserved.
 
 #
 # mokekek
-)==="};
-        auto const &result = ParseNMakeStyle (input);
+)===");
         REQUIRE_FALSE (result);
     }
     SUBCASE ("malformed dependency") {
-        const std::string input { R"===(
+        auto const &result = ParseNMakeStyle (R"===(
 # mokeke
 
-        foo)==="};
-        auto const &result = ParseNMakeStyle (input);
+        foo)===");
         REQUIRE_FALSE (result);
     }
 
     SUBCASE ("simple dependency") {
-        const std::string input { "abc : def"};
-        auto const &result = ParseNMakeStyle (input);
+        auto const &result = ParseNMakeStyle ("abc : def");
 
         REQUIRE (result);
         auto const &    prereq = result.prerequisites ();
@@ -42,8 +38,7 @@ TEST_CASE ("nmake style dependency") {
         REQUIRE (prereq [0] == "def");
     }
     SUBCASE ("simple with continuation") {
-        const std::string input { "abc :\\\r\n def"};
-        auto const &result = ParseNMakeStyle (input);
+        auto const &result = ParseNMakeStyle ("abc :\\\r\n def");
 
         REQUIRE (result);
         auto const &    prereq = result.prerequisites ();
@@ -53,8 +48,7 @@ TEST_CASE ("nmake style dependency") {
     }
 
     SUBCASE ("simple with continuation 2") {
-        const std::string input { "abc :\\\r\n def \\\r\n"};
-        auto const &result = ParseNMakeStyle (input);
+        auto const &result = ParseNMakeStyle ("abc :\\\r\n def \\\r\n");
 
         REQUIRE (result);
         auto const &    prereq = result.prerequisites ();
@@ -63,8 +57,7 @@ TEST_CASE ("nmake style dependency") {
         REQUIRE (prereq [0] == "def");
     }
     SUBCASE ("simple with continuation and stray '\\'") {
-        const std::string input { "abc :\\\r\n def \\\r"};
-        auto const &result = ParseNMakeStyle (input);
+        auto const &result = ParseNMakeStyle ("abc :\\\r\n def \\\r");
 
         REQUIRE (result);
         auto const &    prereq = result.prerequisites ();
@@ -74,7 +67,7 @@ TEST_CASE ("nmake style dependency") {
         REQUIRE (prereq [1] == "\\");   // Is really needed?
     }
     SUBCASE ("large input") {
-        const std::string input { R"###(
+        auto const &result = ParseNMakeStyle (R"###(
 "z/sample.h": c:\dev\ref_tbl_gen\sample.h \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\memory \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\xmemory \
@@ -183,8 +176,7 @@ TEST_CASE ("nmake style dependency") {
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\tuple \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\fstream \
   c:\tools\MSVS\2017\Professional\VC\Tools\MSVC\14.16.27023\include\iostream
-)###"};
-        auto const &result = ParseNMakeStyle (input);
+)###");
         REQUIRE (result);
         auto const &    prereq = result.prerequisites ();
         REQUIRE (result.target () == "z/sample.h");
