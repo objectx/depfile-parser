@@ -28,12 +28,13 @@ namespace DependencyFileParser {
         Result (std::string target, std::vector<std::string> prereq) : target_ {std::move (target)}, prerequisites_ {std::move (prereq)} {
             /* NO-OP */
         }
+        Result &           operator= (const Result &) = default;
+        Result &           operator= (Result &&) = default;
+        [[nodiscard]] bool is_valid () const noexcept { return ! target_.empty (); }
+        explicit           operator bool () const noexcept { return is_valid (); }
 
-        bool     is_valid () const noexcept { return ! target_.empty (); }
-        explicit operator bool () const noexcept { return is_valid (); }
-
-        const std::string &             target () const { return target_; }
-        const std::vector<std::string> &prerequisites () const { return prerequisites_; }
+        [[nodiscard]] const std::string &             target () const { return target_; }
+        [[nodiscard]] const std::vector<std::string> &prerequisites () const { return prerequisites_; }
     };
 
     /// @brief Parse supplied bytes as a UN?X Make style dependency definition.

@@ -12,12 +12,12 @@ using namespace DependencyFileParser::detail;
 
 namespace {
     std::tuple<std::string, const char *> fetch_token (const char *p, const char *end_p) {
-        assert (p < end_p);
-        assert (! isspace (*p));
+        assert (p < end_p);       // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+        assert (! isspace (*p));  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
 
         std::string tok;
         while (p < end_p) {
-            if (isspace (*p)) {
+            if (isspace (*p) != 0) {
                 return {std::move (tok), skip_comment_and_space (p, end_p)};
             }
             if (*p == '\\') {
@@ -31,7 +31,7 @@ namespace {
             }
             tok.push_back (*p++);
         }
-        assert (p == end_p);
+        assert (p == end_p);  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
         return {std::move (tok), end_p};
     }
 }  // namespace

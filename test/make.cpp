@@ -1,18 +1,19 @@
 /*
  * Copyright (c) 2019 Masashi Fujita. All rights reserved.
  */
-#include <catch2/catch.hpp>
+#include <doctest/doctest.h>
 
 #include <depfile-parser.hpp>
 
 using namespace DependencyFileParser;
-TEST_CASE ("make style dependency", "[make]") {
-    SECTION ("empty input") {
+
+TEST_CASE ("make style dependency") {
+    SUBCASE ("empty input") {
         const std::string input;
         auto const &result = Parse (input);
         REQUIRE_FALSE (result);
     }
-    SECTION ("empty but contains comments") {
+    SUBCASE ("empty but contains comments") {
         const std::string input { R"===(
 # Copyright (c) 2020 Masashi Fujita All rights reserved.
 
@@ -22,7 +23,7 @@ TEST_CASE ("make style dependency", "[make]") {
         auto const &result = Parse (input);
         REQUIRE_FALSE (result);
     }
-    SECTION ("malformed dependency") {
+    SUBCASE ("malformed dependency") {
         const std::string input { R"===(
 # mokeke
 
@@ -31,7 +32,7 @@ TEST_CASE ("make style dependency", "[make]") {
         REQUIRE_FALSE (result);
     }
 
-    SECTION ("simple dependency") {
+    SUBCASE ("simple dependency") {
         const std::string input { "abc : def"};
         auto const &result = Parse (input);
 
@@ -41,7 +42,7 @@ TEST_CASE ("make style dependency", "[make]") {
         REQUIRE (prereq.size () == 1);
         REQUIRE (prereq [0] == "def");
     }
-    SECTION ("simple with continuation") {
+    SUBCASE ("simple with continuation") {
         const std::string input { "abc :\\\r\n def"};
         auto const &result = Parse (input);
 
@@ -52,7 +53,7 @@ TEST_CASE ("make style dependency", "[make]") {
         REQUIRE (prereq [0] == "def");
     }
 
-    SECTION ("simple with continuation 2") {
+    SUBCASE ("simple with continuation 2") {
         const std::string input { "abc :\\\r\n def \\\r\n"};
         auto const &result = Parse (input);
 
@@ -62,7 +63,7 @@ TEST_CASE ("make style dependency", "[make]") {
         REQUIRE (prereq.size () == 1);
         REQUIRE (prereq [0] == "def");
     }
-    SECTION ("simple with continuation and stray '\\'") {
+    SUBCASE ("simple with continuation and stray '\\'") {
         const std::string input { "abc :\\\r\n def \\\r"};
         auto const &result = Parse (input);
 
@@ -73,7 +74,7 @@ TEST_CASE ("make style dependency", "[make]") {
         REQUIRE (prereq [0] == "def");
         REQUIRE (prereq [1] == "\r");   // Is it really needed?
     }
-    SECTION ("large input") {
+    SUBCASE ("large input") {
         const std::string input { R"===(
 # Test dep.
 

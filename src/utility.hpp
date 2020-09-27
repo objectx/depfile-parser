@@ -8,7 +8,7 @@
 #include <tuple>
 #include <vector>
 
-namespace DependencyFileParser { namespace detail {
+namespace DependencyFileParser::detail {
     /// @brief Skips white spaces
     /// @param src Start of the sequence
     /// @param end_p End of the sequence
@@ -84,4 +84,4 @@ namespace DependencyFileParser { namespace detail {
         }
         return {std::move (target_path), std::move (deps)};
     }
-}}  // namespace DependencyFileParser::detail
+}  // namespace DependencyFileParser::detail
