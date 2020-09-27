@@ -6,36 +6,41 @@
 
 #include <cassert>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 using namespace DependencyFileParser::detail;
 
 namespace {
-    std::tuple<std::string, const char *> fetch_token (const char *p, const char *end_p) {
-        assert (p < end_p);       // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-        assert (! isspace (*p));  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
+    tokenizer_result_t fetch_token (std::string_view src) {
+        assert (! src.empty ());
+        assert (! isspace (src[0]));
 
         std::string tok;
-        while (p < end_p) {
-            if (isspace (*p) != 0) {
-                return {std::move (tok), skip_comment_and_space (p, end_p)};
+        while (! src.empty ()) {
+            if (isspace (src[0]) != 0) {
+                return {tok, skip_comment_and_space (src)};
             }
-            if (*p == '\\') {
-                ++p;
-                if (end_p <= p) {
-                    tok.push_back ('\\');
-                    return {std::move (tok), end_p};
+            if (src[0] == '\\') {
+                src = src.substr (1);
+                if (src.empty ()) {
+                    return {tok, src};
                 }
-                tok.push_back (*p++);
+                tok.push_back (src[0]);
+                src = src.substr (1);
                 continue;
             }
-            tok.push_back (*p++);
+            tok.push_back (src[0]);
+            src = src.substr (1);
         }
-        assert (p == end_p);  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-        return {std::move (tok), end_p};
+        assert (src.empty ());
+        return {std::move (tok), src};
     }
+#pragma clang diagnostic pop
 }  // namespace
 
 namespace DependencyFileParser {
-    Result Parse (std::string_view src) { return parse (fetch_token, src.begin (), src.end ()); }
+    Result Parse (std::string_view src) { return parse (fetch_token, src); }
 }  // namespace DependencyFileParser

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Masashi Fujita All rights reserved.
+ * Copyright (c) 2019 Masashi Fujita. All rights reserved.
  */
 
 /// @file
@@ -8,6 +8,7 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,9 @@ namespace DependencyFileParser {
         Result ()               = default;
         Result (const Result &) = default;
         Result (Result &&)      = default;
-        Result (std::string target, std::vector<std::string> prereq) : target_ {std::move (target)}, prerequisites_ {std::move (prereq)} {
+        Result (std::string_view target, std::vector<std::string> prereq)
+                : target_ {target.begin (), target.end ()}
+                , prerequisites_ {std::move (prereq)} {
             /* NO-OP */
         }
         Result &           operator= (const Result &) = default;

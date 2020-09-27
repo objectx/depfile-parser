@@ -5,6 +5,9 @@
 
 #include <depfile-parser.hpp>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-non-const-global-variables"
+
 using namespace DependencyFileParser;
 TEST_CASE ("nmake style dependency") {
     SUBCASE ("empty input") {
@@ -186,3 +189,5 @@ TEST_CASE ("nmake style dependency") {
         REQUIRE (prereq [100] == "c:\\tools\\MSVS\\2017\\Professional\\VC\\Tools\\MSVC\\14.16.27023\\include\\deque");
     }
 }
+
+#pragma clang diagnostic pop

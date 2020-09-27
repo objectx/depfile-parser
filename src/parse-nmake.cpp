@@ -12,38 +12,36 @@
 using namespace DependencyFileParser::detail;
 
 namespace {
-    std::tuple<std::string, const char *> fetch_token (const char *p, const char *end_p) {
-        assert (p < end_p);       // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-        assert (! isspace (*p));  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-        auto const *q = p;
-        if (*q == '"') {
-            auto const *s = ++q;
-            while (q < end_p) {
-                if (*q == '"') {
-                    std::string token {s, static_cast<size_t> (q - s)};
-                    q = skip_comment_and_space (q + 1, end_p);
-                    return {token, q};
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-pro-bounds-array-to-pointer-decay"
+    tokenizer_result_t fetch_token (std::string_view src) {
+        assert (! src.empty ());
+        assert (! isspace (src[0]));
+
+        if (src[0] == '"') {
+            size_t pos = 1;
+            while (pos < src.size ()) {
+                if (src[pos] == '"') {
+                    return {std::string (src.substr (1, pos - 1)), skip_comment_and_space (src.substr (pos + 1))};
                 }
-                ++q;
+                ++pos;
             }
-            assert (q == end_p);  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-            return {std::string {s, static_cast<size_t> (q - s)}, end_p};
+            assert (pos == src.size ());
+            return {std::string {src.substr (1)}, src.substr (pos)};
         }
-        else {
-            while (q < end_p) {
-                if (isspace (*q) != 0) {
-                    std::string token {p, static_cast<size_t> (q - p)};
-                    q = skip_comment_and_space (q, end_p);
-                    return {token, q};
-                }
-                ++q;
+        size_t pos = 1;
+        while (pos < src.size ()) {
+            if (isspace (src[pos]) != 0) {
+                return {std::string {src.substr (0, pos)}, skip_comment_and_space (src.substr (pos + 1))};
             }
-            assert (q == end_p);  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay,hicpp-no-array-decay)
-            return {std::string {p, static_cast<size_t> (q - p)}, end_p};
+            ++pos;
         }
+        assert (pos == src.size ());
+        return {std::string {src}, src.substr (pos)};
     }
+#pragma clang diagnostic pop
 }  // namespace
 
 namespace DependencyFileParser {
-    Result ParseNMakeStyle (std::string_view src) { return parse (fetch_token, src.begin (), src.end ()); }
+    Result ParseNMakeStyle (std::string_view src) { return parse (fetch_token, src); }
 }  // namespace DependencyFileParser

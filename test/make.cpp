@@ -5,6 +5,9 @@
 
 #include <depfile-parser.hpp>
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "cppcoreguidelines-avoid-non-const-global-variables"
+
 using namespace DependencyFileParser;
 
 TEST_CASE ("make style dependency") {
@@ -226,3 +229,5 @@ z/sample.h: \
         REQUIRE (prereq[142] == "/usr/local/Cellar/llvm/7.0.1/include/c++/v1/__split_buffer");
     }
 }
+
+#pragma clang diagnostic pop

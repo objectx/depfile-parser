@@ -8,69 +8,68 @@
 
 namespace DependencyFileParser::detail {
 
-    const char *skip_space (const char *p, const char *end_p) {
-
-        while (p < end_p) {
-            if (*p == '\\') {
+    std::string_view skip_space (std::string_view s) {
+        size_t i = 0;
+        size_t len = s.size();
+        while (i < len) {
+            if (s[i] == '\\') {
                 // Maybe a continued line.
-                ++p;
-                if (end_p <= p) {
+                ++i;
+                if (len <= i) {
                     // Stray '\\'.
-                    return p - 1;
+                    return s.substr(i - 1);
                 }
                 // Checks \\\n case.
-                if (*p == '\n') {
-                    ++p;
+                if (s[i] == '\n') {
+                    ++i;
                     continue;
                 }
                 // Checks \\\r\n case (for windows).
-                if (*p == '\r') {
-                    ++p;
-                    if (end_p <= p) {
+                if (s[i] == '\r') {
+                    ++i;
+                    if (len <= i) {
                         // "\\\r" -> considered as stray '\\'
-                        return p - 2;
+                        return s.substr (i - 2);
                     }
-                    if (*p == '\n') {
-                        ++p;
+                    if (s[i] == '\n') {
+                        ++i;
                         continue;
                     }
                 }
                 // At this point, *p points next to non EOL character.
-                return p - 1;  // Points '\\'
+                return s.substr (i - 1);  // Points '\\'
             }
-            if (! isspace (*p)) {
-                return p;
+            if (isspace (s[i]) == 0) {
+                return s.substr (i);
             }
-            ++p;
+            ++i;
         }
-        return end_p;
+        return s.substr(len);
     }
 
-    const char *skip_to_eol (const char *p, const char *end_p) {
-        while (p < end_p) {
-            if (*p == '\n') {
-                return p + 1;
+    std::string_view skip_to_eol (std::string_view s) {
+        size_t i = 0;
+        size_t len = s.size();
+        while (i < len) {
+            if (s[i] == '\n') {
+                return s.substr (i + 1);
             }
-            ++p;
+            ++i;
         }
-        return end_p;
+        return s.substr (len);
     }
 
-    const char *skip_comment_and_space (const char *p, const char *end_p) {
-        while (p < end_p) {
-            auto const *q = skip_space (p, end_p);
-            if (q == end_p) {
-                return end_p;
-            }
-            if (*q != '#') {
-                return q;
-            }
-            // *q == '#'.  Skip to EOL.
-            p = skip_to_eol (q + 1, end_p);
-            if (p == end_p) {
-                return end_p;
+    std::string_view skip_comment_and_space (std::string_view s) {
+        while (! s.empty()) {
+            s = skip_space(s);
+            if (! s.empty()) {
+                if (s[0] != '#') {
+                    return s;
+                }
+                // q[0] == '#'.  Skip to EOL.
+                s = skip_to_eol (s.substr (1));
             }
         }
-        return end_p;
+        return s;
     }
 }  // namespace DependencyFileParser::detail
